@@ -13,6 +13,13 @@ import { Badge } from '@/components/ui/badge';
 import { Header } from '@/components/layout/header';
 import { mockGameRooms } from '@/lib/mock-data';
 
+const statusMap: { [key: string]: string } = {
+  waiting: '等待中',
+  'in-progress': '进行中',
+  finished: '已结束',
+};
+
+
 export default function LobbyPage() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -20,10 +27,10 @@ export default function LobbyPage() {
       <main className="flex-1 bg-background">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8 flex items-center justify-between">
-            <h1 className="font-headline text-4xl font-bold">Game Lobbies</h1>
+            <h1 className="font-headline text-4xl font-bold">游戏大厅</h1>
             <Button size="lg" className="font-bold shadow-md">
               <PlusCircle className="mr-2 h-5 w-5" />
-              Create New Room
+              创建新房间
             </Button>
           </div>
 
@@ -32,22 +39,22 @@ export default function LobbyPage() {
               <Card key={room.id} className="flex flex-col transition-all hover:shadow-xl hover:-translate-y-1">
                 <CardHeader>
                   <CardTitle className="font-headline text-2xl">{room.name}</CardTitle>
-                  <CardDescription>Room ID: {room.id}</CardDescription>
+                  <CardDescription>房间ID: {room.id}</CardDescription>
                 </CardHeader>
                 <CardContent className="flex-grow">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center">
                       <Users className="mr-2 h-4 w-4" />
-                      <span>{`${room.players.length} / ${room.maxPlayers} Players`}</span>
+                      <span>{`${room.players.length} / ${room.maxPlayers} 玩家`}</span>
                     </div>
                     <Badge variant={room.status === 'waiting' ? 'secondary' : 'default'} className="capitalize bg-accent text-accent-foreground">
-                      {room.status}
+                      {statusMap[room.status]}
                     </Badge>
                   </div>
                 </CardContent>
                 <CardFooter>
                   <Button asChild className="w-full font-semibold" variant="default" disabled={room.status !== 'waiting'}>
-                    <Link href={`/room/${room.id}`}>Join Room</Link>
+                    <Link href={`/room/${room.id}`}>加入房间</Link>
                   </Button>
                 </CardFooter>
               </Card>

@@ -10,7 +10,7 @@ interface PlayerHandProps {
 export function PlayerHand({ hand }: PlayerHandProps) {
   return (
     <div>
-        <h2 className="mb-4 text-center font-headline text-2xl font-semibold">Your Hand</h2>
+        <h2 className="mb-4 text-center font-headline text-2xl font-semibold">你的手牌</h2>
         <div className="relative flex h-40 w-full justify-center">
         {hand.map((card, index) => (
             <div

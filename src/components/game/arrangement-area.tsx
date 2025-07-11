@@ -27,9 +27,9 @@ const HandRow = ({ title, cards, pointValue }: { title: string, cards: Card[], p
 export function ArrangementArea({ arrangedHand }: ArrangementAreaProps) {
   return (
     <div className="mt-8 space-y-6">
-      <HandRow title="Front Hand" cards={arrangedHand.front} pointValue="3 Cards" />
-      <HandRow title="Middle Hand" cards={arrangedHand.middle} pointValue="5 Cards" />
-      <HandRow title="Back Hand" cards={arrangedHand.back} pointValue="5 Cards" />
+      <HandRow title="头道" cards={arrangedHand.front} pointValue="3 张牌" />
+      <HandRow title="中道" cards={arrangedHand.middle} pointValue="5 张牌" />
+      <HandRow title="尾道" cards={arrangedHand.back} pointValue="5 张牌" />
     </div>
   );
 }

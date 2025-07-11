@@ -22,7 +22,7 @@ const OtherPlayer = ({ player, position }: { player: Player; position: string })
                 <AvatarFallback>{player.name.substring(0,2)}</AvatarFallback>
             </Avatar>
             <span className="font-semibold text-sm">{player.name}</span>
-            <Badge variant="secondary">Ready</Badge>
+            <Badge variant="secondary">准备好了</Badge>
         </div>
     </div>
 )
@@ -55,11 +55,11 @@ export function GameBoard({ room }: GameBoardProps) {
           <div className="mt-10 flex justify-center gap-4">
             <Button size="lg" variant="outline" className="font-bold">
               <Shuffle className="mr-2 h-5 w-5" />
-              Auto-Arrange
+              自动理牌
             </Button>
             <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-bold shadow-lg">
               <Check className="mr-2 h-5 w-5" />
-              Confirm Hand
+              确认手牌
             </Button>
           </div>
         </CardContent>

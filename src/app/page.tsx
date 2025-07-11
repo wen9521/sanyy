@@ -12,20 +12,20 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <LogoIcon className="h-16 w-16" />
           </div>
-          <CardTitle className="font-headline text-4xl font-bold text-primary">Shisanshui Online</CardTitle>
+          <CardTitle className="font-headline text-4xl font-bold text-primary">十三水在线</CardTitle>
           <CardDescription className="pt-2 text-lg">
-            The ultimate online Thirteen Water card game.
+            终极在线十三水纸牌游戏。
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center space-y-4">
             <p className="text-center text-muted-foreground">
-              Challenge players worldwide. Log in to start playing.
+              挑战全球玩家。登录以开始游戏。
             </p>
             <Button asChild size="lg" className="w-full font-bold shadow-lg">
               <Link href="/lobby">
                 <Github className="mr-2 h-5 w-5" />
-                Login with GitHub
+                使用 GitHub 登录
               </Link>
             </Button>
           </div>

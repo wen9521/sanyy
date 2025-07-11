@@ -1,37 +1,37 @@
 import type { GameRoom, Player, Card, Suit, Rank } from './types';
 
 export const mockPlayers: Player[] = [
-  { id: '1', name: 'Player One', avatarUrl: 'https://placehold.co/100x100' },
-  { id: '2', name: 'Player Two', avatarUrl: 'https://placehold.co/100x100' },
-  { id: '3', name: 'Player Three', avatarUrl: 'https://placehold.co/100x100' },
-  { id: '4', name: 'Player Four', avatarUrl: 'https://placehold.co/100x100' },
+  { id: '1', name: '玩家一', avatarUrl: 'https://placehold.co/100x100' },
+  { id: '2', name: '玩家二', avatarUrl: 'https://placehold.co/100x100' },
+  { id: '3', name: '玩家三', avatarUrl: 'https://placehold.co/100x100' },
+  { id: '4', name: '玩家四', avatarUrl: 'https://placehold.co/100x100' },
 ];
 
 export const mockGameRooms: GameRoom[] = [
   {
     id: 'room-1',
-    name: "Beginner's Luck",
+    name: "新手好运",
     players: [mockPlayers[0], mockPlayers[1]],
     maxPlayers: 4,
     status: 'waiting',
   },
   {
     id: 'room-2',
-    name: 'High Rollers Only',
+    name: '高额赌注',
     players: [mockPlayers[2], mockPlayers[3], mockPlayers[0]],
     maxPlayers: 4,
     status: 'waiting',
   },
   {
     id: 'room-3',
-    name: 'Casual Table',
+    name: '休闲牌桌',
     players: [mockPlayers[1]],
     maxPlayers: 4,
     status: 'waiting',
   },
     {
     id: 'room-4',
-    name: 'Pro League',
+    name: '职业联赛',
     players: mockPlayers,
     maxPlayers: 4,
     status: 'in-progress',
