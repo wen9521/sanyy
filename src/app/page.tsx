@@ -1,36 +1,30 @@
 import Link from 'next/link';
-import { Github, Eye } from 'lucide-react';
+import { Eye, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import LogoIcon from '@/components/icons/logo-icon';
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md shadow-2xl">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            <Eye className="h-10 w-10 text-primary" />
-          </div>
-          <CardTitle className="font-headline text-4xl font-bold text-primary">大家来找茬</CardTitle>
-          <CardDescription className="pt-2 text-lg">
-            挑战你的眼力，找出所有不同之处！
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center space-y-4">
-            <p className="text-center text-muted-foreground">
-              登录以开始游戏，挑战全球玩家。
-            </p>
-            <Button asChild size="lg" className="w-full font-bold shadow-lg">
-              <Link href="/lobby">
-                <Github className="mr-2 h-5 w-5" />
-                使用 GitHub 登录
-              </Link>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-background p-4">
+       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
+       <div className="relative z-10 flex flex-col items-center space-y-8">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 shadow-lg">
+                <Eye className="h-14 w-14 text-primary" />
+            </div>
+            <div className="text-center">
+                 <h1 className="font-headline text-5xl font-bold tracking-tighter text-primary sm:text-6xl md:text-7xl">
+                    大家来找茬
+                </h1>
+                <p className="mt-4 max-w-md text-lg text-muted-foreground md:text-xl">
+                    挑战你的眼力极限，找出所有不同之处，成为找茬大师！
+                </p>
+            </div>
+            <Button asChild size="lg" className="w-full max-w-xs rounded-full p-6 text-lg font-bold shadow-lg transition-transform hover:scale-105">
+                <Link href="/lobby">
+                    开始游戏
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+       </div>
     </div>
   );
 }

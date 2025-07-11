@@ -23,21 +23,24 @@ export default function RoomPage() {
       if (roomId === 'ai-generated') {
         const newGameDataString = sessionStorage.getItem('newGameData');
         if (newGameDataString) {
-          const gameData = JSON.parse(newGameDataString);
-          const newRoom: GameRoom = {
-            id: 'ai-generated',
-            name: gameData.topic || "AI 生成的挑战",
-            players: [],
-            maxPlayers: 1,
-            status: 'waiting',
-            difficulty: '中等',
-            image1: gameData.image1,
-            image2: gameData.image2,
-            differences: gameData.differences,
-          };
-          setRoom(newRoom);
-          // Optional: clear it after use
-          // sessionStorage.removeItem('newGameData');
+          try {
+            const gameData = JSON.parse(newGameDataString);
+            const newRoom: GameRoom = {
+              id: 'ai-generated',
+              name: gameData.topic || "AI 生成的挑战",
+              players: [],
+              maxPlayers: 1,
+              status: 'waiting',
+              difficulty: '中等',
+              image1: gameData.image1,
+              image2: gameData.image2,
+              differences: gameData.differences,
+            };
+            setRoom(newRoom);
+          } catch(e) {
+             console.error("Failed to parse game data from sessionStorage", e);
+             setRoom(null); // Parsing error
+          }
         } else {
           // If there's no data, maybe redirect or show an error
           setRoom(null);
@@ -54,12 +57,16 @@ export default function RoomPage() {
 
   if (room === undefined) {
     return (
-       <div className="flex min-h-screen flex-col">
+       <div className="flex h-screen flex-col">
         <Header />
-        <main className="flex-1 bg-background">
-          <div className="container mx-auto p-8">
-            <Skeleton className="h-96 w-full" />
-          </div>
+        <main className="flex-1 p-4">
+            <div className="flex h-full flex-col gap-4">
+                <Skeleton className="h-20 w-full" />
+                <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <Skeleton className="h-full w-full" />
+                    <Skeleton className="h-full w-full" />
+                </div>
+            </div>
         </main>
       </div>
     );
@@ -70,12 +77,10 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col bg-muted/40">
       <Header />
-      <main className="flex-1 bg-background">
-        <div className="container mx-auto">
-          <GameBoard room={room} />
-        </div>
+      <main className="flex-1 overflow-hidden">
+         <GameBoard room={room} />
       </main>
     </div>
   );

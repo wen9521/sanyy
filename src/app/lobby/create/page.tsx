@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Sparkles, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Sparkles, Wand2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -36,15 +36,8 @@ export default function CreateGamePage() {
     }
     setLoading(true);
     try {
-      // In a real app, we would save the new game to a database
-      // and get a real room ID. For this mock, we'll just navigate
-      // to a placeholder room page with the generated data.
       const gameData = await createGame({ topic });
-
-      // We can't pass the large image data URIs directly in the URL,
-      // so we'll store it in sessionStorage for the next page to pick up.
       sessionStorage.setItem('newGameData', JSON.stringify(gameData));
-      
       router.push(`/room/ai-generated`);
 
     } catch (error) {
@@ -60,44 +53,67 @@ export default function CreateGamePage() {
     }
   };
 
+  const handleSuggestionClick = (suggestion: string) => {
+    setTopic(suggestion);
+  }
+
+  const suggestions = [
+    "森林里的动物派对",
+    "海底世界的奇妙冒险",
+    "太空站里的宇航员",
+    "繁忙的城市街道",
+    "魔法师的神秘实验室"
+  ];
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-muted/40">
       <Header />
-      <main className="flex-1 bg-background">
+      <main className="flex-1">
         <div className="container mx-auto flex h-full items-center justify-center px-4 py-8">
-          <Card className="w-full max-w-lg shadow-xl">
-            <CardHeader>
-              <CardTitle className="font-headline text-3xl">创建新游戏</CardTitle>
-              <CardDescription>
-                输入一个主题，让 AI 为你生成独一无二的找茬图片！
+          <Card className="w-full max-w-2xl shadow-xl">
+            <CardHeader className="items-center text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                <Wand2 className="h-9 w-9 text-primary" />
+              </div>
+              <CardTitle className="font-headline text-4xl">创建 AI 游戏</CardTitle>
+              <CardDescription className="max-w-md pt-1">
+                输入一个好玩的主题，让 AI 为你生成独一无二的找茬图片！越具体越有趣哦。
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid w-full items-center gap-2">
-                <Label htmlFor="topic">游戏主题</Label>
+              <div className="grid w-full items-center gap-4">
+                <Label htmlFor="topic" className="sr-only">游戏主题</Label>
                 <Input
                   id="topic"
                   type="text"
-                  placeholder="例如：一只猫在太空漫步"
+                  className="h-12 text-center text-lg"
+                  placeholder="例如：一只戴着宇航员头盔的柯基犬"
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
                   disabled={loading}
                 />
+                <div className="flex flex-wrap justify-center gap-2">
+                    {suggestions.map(s => (
+                        <Button key={s} variant="outline" size="sm" onClick={() => handleSuggestionClick(s)} disabled={loading}>
+                            {s}
+                        </Button>
+                    ))}
+                </div>
               </div>
             </CardContent>
             <CardFooter>
               <Button
                 size="lg"
-                className="w-full font-bold"
+                className="w-full rounded-full p-6 text-lg font-bold"
                 onClick={handleCreateGame}
                 disabled={loading}
               >
                 {loading ? (
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  <Loader2 className="mr-2 h-6 w-6 animate-spin" />
                 ) : (
-                  <Sparkles className="mr-2 h-5 w-5" />
+                  <Sparkles className="mr-2 h-6 w-6" />
                 )}
-                {loading ? '正在生成图片...' : '开始生成'}
+                {loading ? 'AI 正在努力创作中...' : '开始生成'}
               </Button>
             </CardFooter>
           </Card>

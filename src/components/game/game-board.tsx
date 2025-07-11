@@ -3,36 +3,32 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Check, HelpCircle, Trophy, Users, Award } from 'lucide-react';
+import { Trophy, Users, CheckCircle, XCircle, Star } from 'lucide-react';
 import type { GameRoom, Player, Difference } from '@/lib/types';
 import { mockPlayers } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { Badge } from '../ui/badge';
+import { Card, CardContent } from '../ui/card';
 import { Progress } from '../ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
 
 interface GameBoardProps {
   room: GameRoom;
 }
 
-const PlayerInfo = ({ player, isCurrentUser, className }: { player: Player; isCurrentUser?: boolean, className?: string }) => (
-  <div className={cn("flex items-center gap-3 rounded-xl bg-card p-3 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 sm:p-4 sm:flex-col sm:justify-center sm:max-w-xs sm:w-full", className)}>
-    <Avatar className={cn(`h-16 w-16 sm:h-24 sm:w-24 border-4`, isCurrentUser ? 'border-primary' : 'border-muted')}>
-      <AvatarImage src={player.avatarUrl} data-ai-hint="avatar" />
-      <AvatarFallback>{player.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-    </Avatar>
-    <div className="text-left sm:text-center">
-        <h3 className="text-lg sm:text-xl font-bold text-foreground">{player.name}</h3>
-        <div className="flex items-center gap-2 mt-1 sm:mt-2">
-            <Award className={cn(`h-5 w-5 sm:h-6 sm:w-6`, isCurrentUser ? 'text-primary' : 'text-muted-foreground')}/>
-            <p className="text-xl sm:text-2xl font-black text-foreground">{player.score}<span className="text-xs sm:text-sm font-medium text-muted-foreground ml-1">分</span></p>
+const PlayerChip = ({ player, isCurrentUser }: { player: Player; isCurrentUser?: boolean }) => (
+    <div className={cn("flex items-center gap-3 rounded-full p-2 pr-4 transition-all duration-300", isCurrentUser ? 'bg-primary/10' : 'bg-muted')}>
+        <Avatar className={cn('h-10 w-10 border-2', isCurrentUser ? 'border-primary' : 'border-transparent')}>
+            <AvatarImage src={player.avatarUrl} data-ai-hint="avatar" />
+            <AvatarFallback>{player.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div>
+            <h3 className="text-sm font-bold text-foreground">{player.name}</h3>
+            <p className="text-xs font-semibold text-muted-foreground">{player.score} 分</p>
         </div>
     </div>
-  </div>
-);
+)
 
 export function GameBoard({ room }: GameBoardProps) {
   const { toast } = useToast();
@@ -60,102 +56,115 @@ export function GameBoard({ room }: GameBoardProps) {
     if (clickedDifference && !foundDifferences.some(fd => fd.id === clickedDifference.id)) {
       setFoundDifferences(prev => [...prev, clickedDifference]);
        toast({
-        title: "找到了！",
-        description: `太棒了！你又发现了一个不同之处：${clickedDifference.description || ''}`,
+        title: (
+            <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <span className="font-bold">找到了！</span>
+            </div>
+        ),
+        description: `太棒了！你发现了: ${clickedDifference.description || '一个不同之处'}`,
       });
+
       if(foundDifferences.length + 1 === totalDifferences) {
         toast({
-            variant: "default",
-            className: "bg-green-500 text-white border-green-600",
-            title: "恭喜通关！",
-            description: "你找到了所有不同之处，真厉害！",
+            className: "border-green-500 bg-green-50 text-green-800 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700",
+            title: (
+                <div className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5 text-yellow-500" />
+                    <span className="font-bold">恭喜通关！</span>
+                </div>
+            ),
+            description: "你找到了所有不同之处，太厉害了！",
         });
       }
     } else if (!clickedDifference) {
       toast({
         variant: "destructive",
-        title: "找错了",
+        title: (
+             <div className="flex items-center gap-2">
+                <XCircle className="h-5 w-5" />
+                <span className="font-bold">找错了</span>
+            </div>
+        ),
         description: "这里好像没有不同哦，再仔细看看吧！",
       });
     }
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-screen-2xl mx-auto">
-        <div className="text-center mb-4 sm:mb-6">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tighter text-primary font-headline">
-            {room.name}
-            </h1>
-            <p className="mt-2 text-md sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            在两张图片中找出所有不同之处，挑战你的观察力极限！
-            </p>
+    <div className="flex h-full flex-col p-2 sm:p-4 lg:p-6">
+        {/* Game Status Header */}
+        <div className="mb-4 flex w-full flex-col gap-4 rounded-lg bg-card p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-1 items-center justify-between gap-4 sm:justify-start">
+                <PlayerChip player={currentPlayer} isCurrentUser />
+                <div className="font-black text-2xl text-muted-foreground">VS</div>
+                <PlayerChip player={opponentPlayer} />
+            </div>
+            <div className="flex w-full flex-1 items-center gap-4">
+                <div className="flex items-center gap-2 text-amber-500">
+                    <Trophy className="h-6 w-6" />
+                    <p className="font-bold text-xl text-foreground">
+                        <span className="text-2xl">{foundDifferences.length}</span>
+                        <span className="text-muted-foreground">/{totalDifferences}</span>
+                    </p>
+                </div>
+                <Progress value={progress} className="h-3 w-full" />
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] lg:gap-6 items-start">
-            
-            <PlayerInfo player={currentPlayer} isCurrentUser className="hidden lg:flex" />
-
-            <div className="flex flex-col gap-4 items-center">
-                 {/* Player info for mobile */}
-                <div className="grid grid-cols-2 gap-4 w-full lg:hidden mb-4">
-                    <PlayerInfo player={currentPlayer} isCurrentUser />
-                    <PlayerInfo player={opponentPlayer} />
-                </div>
-
-                <Card className="w-full shadow-2xl overflow-hidden bg-card/80 backdrop-blur-sm border-2">
-                    <CardHeader className="p-3 sm:p-4 border-b">
-                        <div className="flex items-center justify-between gap-2 sm:gap-4">
-                            <div className="flex items-center gap-2 sm:gap-3">
-                                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
-                                <p className="font-bold text-xl sm:text-2xl text-foreground">{`${foundDifferences.length} / ${totalDifferences}`}</p>
-                            </div>
-                            <div className="flex-1 max-w-xs sm:max-w-sm">
-                                <Progress value={progress} className="h-2 sm:h-3" />
-                            </div>
-                             <div className="flex items-center gap-2 sm:gap-3">
-                                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-                                <p className="font-semibold text-md sm:text-lg text-muted-foreground">2 玩家</p>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-2 sm:p-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 relative" onClick={handleImageClick}>
-                            {[room.image1, room.image2].map((imgSrc, index) => (
-                                <div key={index} className={`relative aspect-video w-full rounded-lg overflow-hidden border-4 ${isGameWon ? 'border-green-500' : 'border-transparent'} shadow-lg transition-all duration-500`}>
-                                    <Image src={imgSrc || ''} alt={`游戏图片 ${index + 1}`} layout="fill" objectFit="cover" data-ai-hint="kids drawing" className="cursor-crosshair" />
-                                    {foundDifferences.map(diff => (
-                                        <div
-                                            key={diff.id}
-                                            className="absolute rounded-full border-4 border-yellow-400 bg-yellow-300/20 backdrop-blur-sm transition-all duration-300 animate-in fade-in zoom-in"
-                                            style={{
-                                                left: `${diff.x}%`,
-                                                top: `${diff.y}%`,
-                                                width: `${diff.radius * 2}%`,
-                                                height: `${diff.radius * 2}%`,
-                                                transform: 'translate(-50%, -50%)',
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-                <div className="flex justify-center gap-4 w-full mt-2">
-                    <Button size="lg" variant="outline" className="font-bold text-md sm:text-lg py-3 sm:py-6 px-4 sm:px-8" disabled={isGameWon}>
-                        <HelpCircle className="mr-2 h-5 w-5 sm:mr-3 sm:h-6 sm:w-6" />
-                        请求提示
-                    </Button>
-                     <Button size="lg" className="font-bold text-md sm:text-lg py-3 sm:py-6 px-4 sm:px-8 shadow-lg bg-primary hover:bg-primary/90" disabled={!isGameWon}>
-                        <Check className="mr-2 h-5 w-5 sm:mr-3 sm:h-6 sm:w-6" />
-                        {isGameWon ? '挑战成功!' : '完成'}
-                    </Button>
+        {/* Game Board */}
+        <div className="relative flex-1" onClick={handleImageClick}>
+            <div className={cn(
+                "grid h-full w-full grid-cols-1 gap-2 sm:gap-4 lg:grid-cols-2",
+                isGameWon && "pointer-events-none"
+                )}>
+                {[room.image1, room.image2].map((imgSrc, index) => (
+                    <div key={index} className="relative h-full w-full">
+                        <Card className="relative h-full w-full overflow-hidden shadow-lg">
+                             <Image 
+                                src={imgSrc || ''} 
+                                alt={`游戏图片 ${index + 1}`} 
+                                layout="fill" 
+                                objectFit="cover" 
+                                className={cn("cursor-crosshair transition-all duration-500", isGameWon && "saturate-50")}
+                                data-ai-hint="kids drawing" 
+                             />
+                        </Card>
+                        {foundDifferences.map(diff => (
+                            <div
+                                key={diff.id}
+                                className="absolute rounded-full border-4 border-yellow-400 bg-yellow-400/20 shadow-xl ring-4 ring-background/50 transition-all duration-300 animate-in fade-in zoom-in"
+                                style={{
+                                    left: `${diff.x}%`,
+                                    top: `${diff.y}%`,
+                                    width: `${diff.radius * 2}%`,
+                                    height: `${diff.radius * 2}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                            />
+                        ))}
+                    </div>
+                ))}
+            </div>
+        </div>
+        
+        {isGameWon && (
+             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in">
+                <div className="text-center text-white">
+                    <Trophy className="mx-auto h-24 w-24 text-yellow-400 drop-shadow-lg" />
+                    <h2 className="mt-4 font-headline text-5xl font-bold">挑战成功！</h2>
+                    <p className="mt-2 text-lg text-yellow-100">你真是个找茬大师！</p>
+                    <div className="mt-8 flex gap-4">
+                         <Button size="lg" variant="default" asChild className="rounded-full font-bold">
+                            <a href="/lobby/create">再来一局</a>
+                        </Button>
+                        <Button size="lg" variant="outline" asChild className="rounded-full border-white/50 bg-white/10 font-bold text-white hover:bg-white/20 hover:text-white">
+                            <a href="/lobby">返回大厅</a>
+                        </Button>
+                    </div>
                 </div>
             </div>
-
-            <PlayerInfo player={opponentPlayer} className="hidden lg:flex" />
-
-        </div>
+        )}
     </div>
   );
 }
