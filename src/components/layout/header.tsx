@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LogOut, User, Crown, Users } from 'lucide-react';
+import { LogOut, User, Crown, Users, Eye } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,15 +12,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import LogoIcon from '../icons/logo-icon';
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/lobby" className="flex items-center gap-2">
-          <LogoIcon className="h-8 w-8" />
-          <span className="font-headline text-xl font-bold">十三水在线</span>
+          <Eye className="h-8 w-8 text-primary" />
+          <span className="font-headline text-xl font-bold">大家来找茬</span>
         </Link>
         <div className="flex items-center gap-4">
           <Button variant="ghost" asChild>

@@ -1,15 +1,15 @@
-export type Suit = 'SPADES' | 'HEARTS' | 'DIAMONDS' | 'CLUBS';
-export type Rank = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'T' | 'J' | 'Q' | 'K' | 'A';
-
-export interface Card {
-  suit: Suit;
-  rank: Rank;
+export interface Difference {
+  id: number;
+  x: number; // percentage
+  y: number; // percentage
+  radius: number; // percentage
 }
 
 export interface Player {
   id: string;
   name: string;
   avatarUrl: string;
+  score?: number;
 }
 
 export interface GameRoom {
@@ -18,4 +18,8 @@ export interface GameRoom {
   players: Player[];
   maxPlayers: number;
   status: 'waiting' | 'in-progress' | 'finished';
+  difficulty: '简单' | '中等' | '困难' | '专家';
+  image1?: string;
+  image2?: string;
+  differences?: Difference[];
 }

@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
-  title: '十三水在线',
-  description: '一款多人在线十三水纸牌游戏。',
+  title: '大家来找茬',
+  description: '一款有趣的在线大家来找茬游戏。',
 };
 
 export default function RootLayout({
