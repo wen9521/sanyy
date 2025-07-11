@@ -12,22 +12,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface GameBoardProps {
   room: GameRoom;
 }
 
-const PlayerInfo = ({ player, isCurrentUser }: { player: Player; isCurrentUser?: boolean }) => (
-  <div className="flex flex-col items-center justify-center gap-3 rounded-xl bg-card p-4 shadow-lg w-full max-w-xs transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-    <Avatar className={`h-24 w-24 border-4 ${isCurrentUser ? 'border-primary' : 'border-muted'}`}>
+const PlayerInfo = ({ player, isCurrentUser, className }: { player: Player; isCurrentUser?: boolean, className?: string }) => (
+  <div className={cn("flex items-center gap-3 rounded-xl bg-card p-3 shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 sm:p-4 sm:flex-col sm:justify-center sm:max-w-xs sm:w-full", className)}>
+    <Avatar className={cn(`h-16 w-16 sm:h-24 sm:w-24 border-4`, isCurrentUser ? 'border-primary' : 'border-muted')}>
       <AvatarImage src={player.avatarUrl} data-ai-hint="avatar" />
       <AvatarFallback>{player.name.substring(0, 2).toUpperCase()}</AvatarFallback>
     </Avatar>
-    <div className="text-center">
-        <h3 className="text-xl font-bold text-foreground">{player.name}</h3>
-        <div className="flex items-center gap-2 mt-2">
-            <Award className={`h-6 w-6 ${isCurrentUser ? 'text-primary' : 'text-muted-foreground'}`}/>
-            <p className="text-2xl font-black text-foreground">{player.score}<span className="text-sm font-medium text-muted-foreground ml-1">分</span></p>
+    <div className="text-left sm:text-center">
+        <h3 className="text-lg sm:text-xl font-bold text-foreground">{player.name}</h3>
+        <div className="flex items-center gap-2 mt-1 sm:mt-2">
+            <Award className={cn(`h-5 w-5 sm:h-6 sm:w-6`, isCurrentUser ? 'text-primary' : 'text-muted-foreground')}/>
+            <p className="text-xl sm:text-2xl font-black text-foreground">{player.score}<span className="text-xs sm:text-sm font-medium text-muted-foreground ml-1">分</span></p>
         </div>
     </div>
   </div>
@@ -81,39 +82,44 @@ export function GameBoard({ room }: GameBoardProps) {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-screen-2xl mx-auto">
-        <div className="text-center mb-6">
-            <h1 className="text-4xl font-extrabold tracking-tighter text-primary sm:text-5xl font-headline">
+        <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tighter text-primary font-headline">
             {room.name}
             </h1>
-            <p className="mt-2 text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="mt-2 text-md sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             在两张图片中找出所有不同之处，挑战你的观察力极限！
             </p>
         </div>
 
-        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_3fr_1fr] gap-6 items-center">
-            <div className="flex justify-center">
-                <PlayerInfo player={currentPlayer} isCurrentUser />
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] lg:gap-6 items-start">
+            
+            <PlayerInfo player={currentPlayer} isCurrentUser className="hidden lg:flex" />
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 items-center">
+                 {/* Player info for mobile */}
+                <div className="grid grid-cols-2 gap-4 w-full lg:hidden mb-4">
+                    <PlayerInfo player={currentPlayer} isCurrentUser />
+                    <PlayerInfo player={opponentPlayer} />
+                </div>
+
                 <Card className="w-full shadow-2xl overflow-hidden bg-card/80 backdrop-blur-sm border-2">
-                    <CardHeader className="p-4 border-b">
-                        <div className="flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <Trophy className="h-6 w-6 text-amber-400" />
-                                <p className="font-bold text-2xl text-foreground">{`${foundDifferences.length} / ${totalDifferences}`}</p>
+                    <CardHeader className="p-3 sm:p-4 border-b">
+                        <div className="flex items-center justify-between gap-2 sm:gap-4">
+                            <div className="flex items-center gap-2 sm:gap-3">
+                                <Trophy className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
+                                <p className="font-bold text-xl sm:text-2xl text-foreground">{`${foundDifferences.length} / ${totalDifferences}`}</p>
                             </div>
-                            <div className="flex-1 max-w-sm">
-                                <Progress value={progress} className="h-3" />
+                            <div className="flex-1 max-w-xs sm:max-w-sm">
+                                <Progress value={progress} className="h-2 sm:h-3" />
                             </div>
-                             <div className="flex items-center gap-3">
-                                <Users className="h-6 w-6 text-muted-foreground" />
-                                <p className="font-semibold text-lg text-muted-foreground">2 玩家</p>
+                             <div className="flex items-center gap-2 sm:gap-3">
+                                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+                                <p className="font-semibold text-md sm:text-lg text-muted-foreground">2 玩家</p>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="p-2 sm:p-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 relative" onClick={handleImageClick}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-4 relative" onClick={handleImageClick}>
                             {[room.image1, room.image2].map((imgSrc, index) => (
                                 <div key={index} className={`relative aspect-video w-full rounded-lg overflow-hidden border-4 ${isGameWon ? 'border-green-500' : 'border-transparent'} shadow-lg transition-all duration-500`}>
                                     <Image src={imgSrc || ''} alt={`游戏图片 ${index + 1}`} layout="fill" objectFit="cover" data-ai-hint="kids drawing" className="cursor-crosshair" />
@@ -135,21 +141,20 @@ export function GameBoard({ room }: GameBoardProps) {
                         </div>
                     </CardContent>
                 </Card>
-                <div className="flex justify-center gap-4 w-full">
-                    <Button size="lg" variant="outline" className="font-bold text-lg py-6 px-8" disabled={isGameWon}>
-                        <HelpCircle className="mr-3 h-6 w-6" />
+                <div className="flex justify-center gap-4 w-full mt-2">
+                    <Button size="lg" variant="outline" className="font-bold text-md sm:text-lg py-3 sm:py-6 px-4 sm:px-8" disabled={isGameWon}>
+                        <HelpCircle className="mr-2 h-5 w-5 sm:mr-3 sm:h-6 sm:w-6" />
                         请求提示
                     </Button>
-                     <Button size="lg" className="font-bold text-lg py-6 px-8 shadow-lg bg-primary hover:bg-primary/90" disabled={!isGameWon}>
-                        <Check className="mr-3 h-6 w-6" />
+                     <Button size="lg" className="font-bold text-md sm:text-lg py-3 sm:py-6 px-4 sm:px-8 shadow-lg bg-primary hover:bg-primary/90" disabled={!isGameWon}>
+                        <Check className="mr-2 h-5 w-5 sm:mr-3 sm:h-6 sm:w-6" />
                         {isGameWon ? '挑战成功!' : '完成'}
                     </Button>
                 </div>
             </div>
 
-            <div className="flex justify-center">
-                <PlayerInfo player={opponentPlayer} />
-            </div>
+            <PlayerInfo player={opponentPlayer} className="hidden lg:flex" />
+
         </div>
     </div>
   );
