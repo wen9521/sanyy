@@ -3,6 +3,7 @@ export interface Difference {
   x: number; // percentage
   y: number; // percentage
   radius: number; // percentage
+  description?: string; // Optional description from AI
 }
 
 export interface Player {

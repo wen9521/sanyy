@@ -27,9 +27,11 @@ export default function LobbyPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8 flex items-center justify-between">
             <h1 className="font-headline text-4xl font-bold">游戏大厅</h1>
-            <Button size="lg" className="font-bold shadow-md">
-              <PlusCircle className="mr-2 h-5 w-5" />
-              创建新游戏
+            <Button asChild size="lg" className="font-bold shadow-md">
+              <Link href="/lobby/create">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                创建新游戏
+              </Link>
             </Button>
           </div>
 
