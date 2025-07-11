@@ -1,40 +1,48 @@
+
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Swords, Check, HelpCircle } from 'lucide-react';
+import { Swords, Check, HelpCircle, Trophy, Users } from 'lucide-react';
 import type { GameRoom, Player, Difference } from '@/lib/types';
 import { mockPlayers } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Button } from '../ui/button';
-import { Card, CardContent } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Progress } from '../ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { Separator } from '../ui/separator';
 
 interface GameBoardProps {
   room: GameRoom;
 }
 
-const OtherPlayer = ({ player }: { player: Player }) => (
-    <div className="flex flex-col items-center gap-2">
-        <Avatar>
-            <AvatarImage src={player.avatarUrl} data-ai-hint="avatar" />
-            <AvatarFallback>{player.name.substring(0,2)}</AvatarFallback>
-        </Avatar>
-        <span className="font-semibold text-sm">{player.name}</span>
-        <Progress value={player.score} className="w-20 h-2" />
-    </div>
-)
+const PlayerInfo = ({ player, isCurrentUser }: { player: Player; isCurrentUser?: boolean }) => (
+  <div className="flex flex-col items-center gap-2">
+    <Avatar className={`h-16 w-16 border-4 ${isCurrentUser ? 'border-primary' : 'border-muted'}`}>
+      <AvatarImage src={player.avatarUrl} data-ai-hint="avatar" />
+      <AvatarFallback>{player.name.substring(0, 2)}</AvatarFallback>
+    </Avatar>
+    <span className="font-bold text-lg text-foreground">{player.name}</span>
+    <Badge variant={isCurrentUser ? "default" : "secondary"}>{player.score} 分</Badge>
+  </div>
+);
 
 export function GameBoard({ room }: GameBoardProps) {
   const { toast } = useToast();
   const [foundDifferences, setFoundDifferences] = useState<Difference[]>([]);
+  
+  // Use a mock current player for demonstration
+  const currentPlayer = mockPlayers[0];
 
   const totalDifferences = room.differences?.length || 7;
   const progress = (foundDifferences.length / totalDifferences) * 100;
+  const isGameWon = foundDifferences.length === totalDifferences;
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (isGameWon) return; // Disable clicking if game is already won
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -48,12 +56,14 @@ export function GameBoard({ room }: GameBoardProps) {
       setFoundDifferences(prev => [...prev, clickedDifference]);
        toast({
         title: "找到了！",
-        description: "你成功找到了一个不同之处。",
+        description: `太棒了！你又发现了一个不同之处：${clickedDifference.description || ''}`,
       });
       if(foundDifferences.length + 1 === totalDifferences) {
         toast({
-            title: "恭喜！",
-            description: "你找到了所有不同之处！",
+            variant: "default",
+            className: "bg-green-500 text-white border-green-600",
+            title: "恭喜通关！",
+            description: "你找到了所有不同之处，真厉害！",
         });
       }
     } else if (!clickedDifference) {
@@ -65,35 +75,57 @@ export function GameBoard({ room }: GameBoardProps) {
     }
   };
 
-
   return (
-    <div className="flex h-full flex-col gap-8 p-4 md:p-8">
-      {/* Players Info */}
-      <div className="relative grid grid-cols-3 items-center justify-items-center gap-4 rounded-lg border-2 border-dashed bg-card/30 p-4">
-        {mockPlayers.slice(1, 4).map(p => <OtherPlayer key={p.id} player={p} />)}
+    <div className="flex h-full flex-col items-center gap-6 p-4 md:p-6 bg-secondary/40 rounded-xl border">
+      <div className="w-full text-center">
+        <h1 className="font-headline text-4xl font-extrabold tracking-tight text-primary">{room.name}</h1>
+        <p className="text-muted-foreground mt-1">找到所有不同之处来赢得比赛！</p>
       </div>
 
+      <div className="grid w-full grid-cols-[1fr_auto_1fr] items-start gap-4 md:gap-8">
+        {/* Left Player (Current) */}
+        <div className="flex justify-center">
+            <PlayerInfo player={currentPlayer} isCurrentUser />
+        </div>
+        
+        {/* Center VS */}
+        <div className="flex items-center h-full">
+            <Swords className="h-10 w-10 text-muted-foreground" />
+        </div>
+        
+        {/* Right Player (Opponent) */}
+        <div className="flex justify-center">
+            <PlayerInfo player={mockPlayers[1]} />
+        </div>
+      </div>
+      
       {/* Game Area */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="mb-4 flex items-center justify-between">
-             <h2 className="font-headline text-2xl font-semibold">{room.name}</h2>
-             <div className="text-right">
-                <p className="font-semibold text-lg">{`${foundDifferences.length} / ${totalDifferences}`}</p>
-                <p className="text-sm text-muted-foreground">已找到</p>
+      <Card className="w-full shadow-2xl overflow-hidden">
+        <CardHeader className="bg-card-foreground/5 border-b p-4">
+             <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <Trophy className="h-6 w-6 text-amber-400" />
+                    <p className="font-bold text-2xl text-foreground">{`${foundDifferences.length} / ${totalDifferences}`}</p>
+                </div>
+                 <div className="w-full max-w-xs">
+                    <Progress value={progress} className="h-4" />
+                 </div>
+                <div className="flex items-center gap-3">
+                    <Users className="h-6 w-6 text-muted-foreground" />
+                    <p className="font-semibold text-lg text-muted-foreground">2 玩家</p>
+                </div>
              </div>
-          </div>
-         <Progress value={progress} className="mb-6 h-3" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative" onClick={handleImageClick}>
+        </CardHeader>
+        <CardContent className="p-2 md:p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4 relative" onClick={handleImageClick}>
               {[room.image1, room.image2].map((imgSrc, index) => (
-                  <div key={index} className="relative aspect-video w-full cursor-crosshair rounded-lg overflow-hidden border">
-                      <Image src={imgSrc || ''} alt={`游戏图片 ${index + 1}`} layout="fill" objectFit="cover" data-ai-hint="kids drawing" />
+                  <div key={index} className={`relative aspect-video w-full rounded-lg overflow-hidden border-4 ${isGameWon ? 'border-green-500' : 'border-transparent'} shadow-lg transition-all`}>
+                      <Image src={imgSrc || ''} alt={`游戏图片 ${index + 1}`} layout="fill" objectFit="cover" data-ai-hint="kids drawing" className="cursor-crosshair" />
                       {/* Show found differences */}
                       {foundDifferences.map(diff => (
                           <div
                               key={diff.id}
-                              className="absolute rounded-full border-4 border-accent bg-accent/20"
+                              className="absolute rounded-full border-4 border-yellow-400 bg-yellow-300/30 backdrop-blur-sm"
                               style={{
                                   left: `${diff.x}%`,
                                   top: `${diff.y}%`,
@@ -106,19 +138,22 @@ export function GameBoard({ room }: GameBoardProps) {
                   </div>
               ))}
           </div>
-
-          <div className="mt-6 flex justify-center gap-4">
-            <Button size="lg" variant="outline" className="font-bold">
-              <HelpCircle className="mr-2 h-5 w-5" />
-              请求提示
-            </Button>
-            <Button size="lg" className="font-bold shadow-lg" disabled={foundDifferences.length < totalDifferences}>
-              <Check className="mr-2 h-5 w-5" />
-              完成
-            </Button>
-          </div>
         </CardContent>
       </Card>
+      
+      {/* Actions */}
+       <div className="flex justify-center gap-4 w-full">
+            <Button size="lg" variant="outline" className="font-bold text-lg py-6 px-8" disabled={isGameWon}>
+              <HelpCircle className="mr-3 h-6 w-6" />
+              请求提示
+            </Button>
+            <Button size="lg" className="font-bold text-lg py-6 px-8 shadow-lg bg-green-600 hover:bg-green-700" disabled={!isGameWon}>
+              <Check className="mr-3 h-6 w-6" />
+              {isGameWon ? '挑战成功!' : '完成'}
+            </Button>
+        </div>
     </div>
   );
 }
+
+    
